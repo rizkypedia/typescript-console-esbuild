@@ -12,7 +12,7 @@ type-check:
 	tsc --noEmit
 
 run:
-	node dist/index.js
+	npm start
 
 test:
 	npm test

@@ -46,18 +46,55 @@ export class SplitSecondStopwatch {
     this._state = StopWatchState.STOPPED
   }
 
-  public lap(): string {
-    return ""
+  public lap(): void {
+    if (this._state === StopWatchState.READY || this._state === StopWatchState.STOPPED) {
+      throw new Error('cannot lap a stopwatch that is not running')
+    }
+    this._previousLaps.push(this._currentLap)
+    this._currentLap = "00:00:00"
   }
 
-  public reset(): string {
-    return ""
+  public reset():void {
+    if (this._state === StopWatchState.READY || this._state === StopWatchState.RUNNNG ) {
+      throw new Error('cannot reset a stopwatch that is not stopped')
+    }
+    this._state = StopWatchState.READY
+    this._currentLap = '00:00:00'
+    this._previousLaps = []
   }
 
   public advanceTime(duration: string): void {
     if (this._state !== StopWatchState.STOPPED) {
-      this._currentLap = duration
-      this._total = duration
+     this._currentLap = this.combineTime(this._currentLap, duration)
+     this._total = this.combineTime(this._total, duration)
     }
+  }
+
+  combineTime(start: string, end: string) {
+    const [sHour, sMinute, sSeconds] = start.split(":")
+    const [ehour, eMinute, eSeconds] = end.split(":")
+    let timeonly = '00:00:00'
+    if (sHour && sMinute && sSeconds) {
+        const intHour = parseInt(sHour)
+        const intMinute = parseInt(sMinute)
+        const intSeconds = parseInt(sSeconds)
+        const ct = new Date()
+        ct.setUTCHours(intHour)
+        ct.setUTCMinutes(intMinute)
+        ct.setUTCSeconds(intSeconds)
+        const eIntHour = parseInt(ehour ?? '0')
+        const eIntMinute = parseInt(eMinute?? '0')
+        const eIntSeconds = parseInt(eSeconds ?? '0')
+        const completeSeconds = (60*60*eIntHour) + (60*eIntMinute) + eIntSeconds
+        ct.setSeconds(ct.getSeconds() + completeSeconds)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const [ddate, time] = ct.toISOString().split("T")
+        if (time) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const [tm, rest] = time.split(".")
+            timeonly = tm ?? '00:00:00'
+        }
+    }
+    return timeonly
   }
 }

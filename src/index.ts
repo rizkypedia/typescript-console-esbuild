@@ -1,9 +1,12 @@
-import { fformat } from "./util/line-up";
+import { arrayRange } from "./util/generatenumbers";
 
-const name = "Jennifer"
+const a = arrayRange(-10, 10, 1)
+console.log(`Range ${a}`)
+const l = a.length / 2 
+const r = Math.floor(l)
+console.log(`Mid Length ${r}`)
 
-const servingTime = 34
+console.log(`middlevalue ${a[r]}`)
 
-const result = fformat(name, servingTime)
-console.log("run")
-console.log(result)
+console.log(a.slice(0, r+1))
+console.log(a.slice(r))
